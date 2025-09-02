@@ -2,13 +2,39 @@
 
 import { initializePaddle } from '@paddle/paddle-js';
 
+// Define the Paddle instance type based on how it's used
+interface PaddleInstance {
+  Checkout: {
+    open: (options: {
+      items: Array<{
+        priceId: string;
+        quantity: number;
+      }>;
+      customData?: Record<string, any>;
+      customer?: {
+        email?: string;
+        name?: string;
+      };
+      discountCode?: string;
+      successUrl?: string;
+      cancelUrl?: string;
+      settings?: {
+        displayMode?: 'overlay' | 'inline';
+        theme?: 'light' | 'dark';
+        locale?: string;
+        allowLogout?: boolean;
+      };
+    }) => Promise<any>;
+  };
+}
+
 // Paddle configuration for sandbox environment
 const PADDLE_ENVIRONMENT = process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || 'sandbox';
 const PADDLE_CLIENT_TOKEN = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN!;
 
-let paddle: unknown = null;
+let paddle: PaddleInstance | null = null;
 
-export const initPaddle = async () => {
+export const initPaddle = async (): Promise<PaddleInstance> => {
   if (paddle) return paddle;
 
   try {
@@ -26,7 +52,7 @@ export const initPaddle = async () => {
       token: PADDLE_CLIENT_TOKEN,
       eventCallback: (data: any) => {
         console.log('Paddle event:', data);
-        
+
         // Handle Paddle events
         switch (data.name) {
           case 'checkout.completed':
@@ -46,7 +72,7 @@ export const initPaddle = async () => {
             break;
         }
       }
-    });
+    }) as unknown as PaddleInstance;
 
     console.log('Paddle initialized successfully');
     return paddle;
@@ -99,22 +125,4 @@ export const openPaddleCheckout = async (checkoutOptions: {
   }
 };
 
-// Test card numbers for Paddle sandbox
-export const TEST_CARDS = {
-  VISA_SUCCESS: '4000000000000002',
-  VISA_DECLINED: '4000000000000069',
-  VISA_INSUFFICIENT_FUNDS: '4000000000000051',
-  MASTERCARD_SUCCESS: '5555555555554444',
-  MASTERCARD_DECLINED: '5555555555554477',
-  AMEX_SUCCESS: '378282246310005',
-  AMEX_DECLINED: '378282246310013'
-};
-
-// Test price IDs for sandbox (you'll need to create these in your Paddle sandbox)
-export const TEST_PRICE_IDS = {
-  CONSULTATION: 'pro_01k460kve28wj9bdmmypdhfrt4', // Replace with actual sandbox price ID
-  TEST: 'pro_01k460mr0qexhsn9cq0kb5cxd4',       // Replace with actual sandbox price ID  
-  MEDICINE: 'pro_01k460nfnwr9qra9ffch56eskq'     // Replace with actual sandbox price ID
-};
-
-export { paddle };
+// ... existing code ...
