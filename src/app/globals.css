@@ -1,26 +1,457 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Premium Dark Neon Design Tokens */
+  --bg: #0A0A0A;
+  --surface: #1A1A1A;
+  --text: #FFFFFF;
+  --text-secondary: #B3B3B3;
+  --text-muted: #8A8A8A;
+  --border: rgba(255, 255, 255, 0.08);
+  --accent-blue: #3B82F6;
+  --accent-cyan: #06B6D4;
+  --accent-purple: #8B5CF6;
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  
+  /* Gradient Tokens */
+  --grad-accent: linear-gradient(135deg, #3B82F6 0%, #06B6D4 50%, #8B5CF6 100%);
+  --grad-aurora: radial-gradient(80vw 60vh at 10% 0%, rgba(59, 130, 246, 0.08), transparent), 
+                 radial-gradient(60vw 50vh at 90% 100%, rgba(139, 92, 246, 0.08), transparent);
+  
+  /* Blur and Shadows */
+  --glass-blur: 16px;
+  --shadow-elev-1: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-elev-2: 0 14px 40px rgba(0, 0, 0, 0.45);
+  --glow-accent: 0 0 24px rgba(59, 130, 246, 0.35);
+  --glow-cyan: 0 0 24px rgba(6, 182, 212, 0.35);
+  --glow-purple: 0 0 24px rgba(139, 92, 246, 0.35);
+  
+  /* Radii and Spacing */
+  --radius-card: 16px;
+  --radius-input: 12px;
+  --radius-button: 12px;
+  
+  /* Motion */
+  --motion-standard: 180ms cubic-bezier(0.2, 0.6, 0.2, 1);
+  --motion-modal: 280ms cubic-bezier(0.2, 0.6, 0.2, 1);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  background-image: var(--grad-aurora);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Aurora background animation */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--grad-aurora);
+  pointer-events: none;
+  z-index: -1;
+  animation: aurora-shift 20s ease-in-out infinite;
+}
+
+@keyframes aurora-shift {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Enhanced focus rings with neon glow */
+:where(button, a, input, textarea, select, [role="button"]) {
+  outline: none;
+  transition: all var(--motion-standard);
+}
+
+:where(button, a, input, textarea, select, [role="button"]):focus-visible {
+  box-shadow: var(--glow-accent);
+  transform: translateY(-1px);
+}
+
+/* Premium animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: var(--glow-accent);
+  }
+  50% {
+    box-shadow: var(--glow-cyan);
+  }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Animation classes */
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.4s ease-out;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.animate-gradient-shift {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+/* Glass morphism cards */
+.card-medical {
+  background: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-elev-1);
+  transition: all var(--motion-standard);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-medical::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--grad-accent);
+  opacity: 0;
+  transition: opacity var(--motion-standard);
+}
+
+.card-medical:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-elev-2);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.card-medical:hover::before {
+  opacity: 1;
+}
+
+/* Premium button styles */
+.btn-primary {
+  background: var(--grad-accent);
+  color: var(--text);
+  border: none;
+  border-radius: var(--radius-button);
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: var(--shadow-elev-1);
+  transition: all var(--motion-standard);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-primary:hover {
+  transform: scale(1.05);
+  box-shadow: var(--glow-accent);
+}
+
+.btn-primary:active {
+  transform: scale(0.96);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-button);
+  padding: 12px 24px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all var(--motion-standard);
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
+/* Glass input styles with floating labels */
+.input-medical {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-input);
+  padding: 16px 20px;
+  font-size: 14px;
+  color: var(--text);
+  transition: all var(--motion-standard);
+  position: relative;
+}
+
+.input-medical::placeholder {
+  color: var(--text-muted);
+  transition: all var(--motion-standard);
+}
+
+.input-medical:focus {
+  border-color: var(--accent-blue);
+  box-shadow: var(--glow-accent);
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-1px);
+}
+
+.input-medical:focus::placeholder {
+  opacity: 0.5;
+  transform: translateY(-2px);
+}
+
+/* Patient cards with glassmorphism */
+.patient-card {
+  background: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 20px;
+  transition: all var(--motion-standard);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.patient-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--grad-accent);
+  transform: scaleX(0);
+  transition: transform var(--motion-standard);
+}
+
+.patient-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-elev-2);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.patient-card:hover::before {
+  transform: scaleX(1);
+}
+
+.patient-card.selected {
+  border-color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.1);
+  box-shadow: var(--glow-accent);
+}
+
+.patient-card.selected::before {
+  transform: scaleX(1);
+}
+
+/* Loading skeleton with neon shimmer */
+.skeleton {
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0.05) 25%, 
+    rgba(255, 255, 255, 0.1) 50%, 
+    rgba(255, 255, 255, 0.05) 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* Glass dialog */
+.dialog-overlay {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.dialog-content {
+  background: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-elev-2);
+  animation: slideInRight 0.4s ease-out;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Prevent background scroll when dialog is open */
+body.dialog-open {
+  overflow: hidden;
+}
+
+/* Floating Action Button */
+.fab {
+  background: var(--grad-accent);
+  color: var(--text);
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-elev-1);
+  transition: all var(--motion-standard);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.fab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity var(--motion-standard);
+}
+
+.fab:hover::before {
+  opacity: 1;
+}
+
+.fab:hover {
+  transform: translateY(-3px) scale(1.1);
+  box-shadow: var(--glow-accent);
+}
+
+/* Glass sticky footer */
+.sticky-footer {
+  background: rgba(26, 26, 26, 0.9);
+  backdrop-filter: blur(var(--glass-blur));
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Neon toast styles */
+.toast-success {
+  background: rgba(34, 197, 94, 0.9);
+  backdrop-filter: blur(var(--glass-blur));
+  color: var(--text);
+  border-radius: var(--radius-card);
+  box-shadow: 0 0 24px rgba(34, 197, 94, 0.35);
+}
+
+.toast-error {
+  background: rgba(239, 68, 68, 0.9);
+  backdrop-filter: blur(var(--glass-blur));
+  color: var(--text);
+  border-radius: var(--radius-card);
+  box-shadow: 0 0 24px rgba(239, 68, 68, 0.35);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .card-medical {
+    border-radius: 12px;
+  }
+  
+  .btn-primary, .btn-secondary {
+    padding: 10px 20px;
+    border-radius: 10px;
+  }
+  
+  .fab {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .input-medical {
+    padding: 14px 16px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .animate-float,
+  .animate-glow-pulse,
+  .animate-gradient-shift {
+    animation: none;
+  }
 }
