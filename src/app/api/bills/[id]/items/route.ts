@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabaseServer';
-import { supabase } from '@/lib/supabaseClient';
+
 
 // POST /api/bills/[id]/items - Add an item to a bill
 export async function POST(request: Request, { params }: { params: { id: string } }) {
@@ -33,9 +33,10 @@ export async function POST(request: Request, { params }: { params: { id: string 
     if (error) throw error;
 
     return NextResponse.json(data, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return NextResponse.json(
-      { error: error.message },
+      { error: errorMessage },
       { status: 500 }
     );
   }
@@ -44,6 +45,17 @@ export async function POST(request: Request, { params }: { params: { id: string 
 // PUT /api/bills/[id]/items - Update a bill item
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   try {
+    const body = await request.json();
+    // Implementation placeholder
+    return NextResponse.json({ message: 'Update not implemented yet' }, { status: 501 });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    return NextResponse.json(
+      { error: errorMessage },
+      { status: 500 }
+    );
+  }
+try {
     const body = await request.json();
     const { item_id, item_type, description, quantity, rate } = body;
 
@@ -87,9 +99,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     if (error) throw error;
 
     return NextResponse.json(data);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return NextResponse.json(
-      { error: error.message },
+      { error: errorMessage },
       { status: 500 }
     );
   }
@@ -117,9 +130,10 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     if (error) throw error;
 
     return NextResponse.json({ message: 'Bill item deleted successfully' });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return NextResponse.json(
-      { error: error.message },
+      { error: errorMessage },
       { status: 500 }
     );
   }

@@ -8,7 +8,7 @@ export async function GET() {
     
     // Test basic connection first
     console.log('🔍 Testing Supabase connection...');
-    const { data: testData, error: testError } = await supabaseServer
+    const { error: testError } = await supabaseServer
       .from('patients')
       .select('id')
       .limit(1);
@@ -36,16 +36,19 @@ export async function GET() {
 
     console.log('✅ Bills query successful, returning data');
     return NextResponse.json(data);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    
     console.error('💥 Bills GET error:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name
+      message: errorMessage,
+      stack: errorStack,
+      name: error instanceof Error ? error.name : 'Unknown'
     });
     return NextResponse.json(
       { 
-        error: error.message,
-        details: error.stack?.substring(0, 500) // First 500 chars of stack trace
+        error: errorMessage,
+        details: errorStack?.substring(0, 500) // First 500 chars of stack trace
       },
       { status: 500 }
     );
@@ -80,13 +83,18 @@ export async function POST(request: Request) {
     if (billError) throw billError;
 
     // Create bill items
-    const itemsToInsert = items.map((item: any) => ({
+    const itemsToInsert = items.map((item: {
+      item_type: string;
+      description: string;
+      quantity: number;
+      rate: string | number;
+    }) => ({
       bill_id: billData.id,
       item_type: item.item_type,
       description: item.description,
       quantity: item.quantity,
-      rate: parseFloat(item.rate),
-      amount: parseFloat(item.rate) * item.quantity
+      rate: parseFloat(item.rate.toString()),
+      amount: parseFloat(item.rate.toString()) * item.quantity
     }));
 
     const { error: itemsError } = await supabaseServer
@@ -109,9 +117,10 @@ export async function POST(request: Request) {
     if (fetchError) throw fetchError;
 
     return NextResponse.json(completeBill, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return NextResponse.json(
-      { error: error.message },
+      { error: errorMessage },
       { status: 500 }
     );
   }

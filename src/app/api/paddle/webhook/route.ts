@@ -23,18 +23,19 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ received: true });
-  } catch (error: any) {
-    console.error('Webhook error:', error);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    console.error('Webhook error:', errorMessage);
     return NextResponse.json(
-      { error: error.message },
+      { error: errorMessage },
       { status: 500 }
     );
   }
 }
 
-async function handleTransactionCompleted(data: any) {
+async function handleTransactionCompleted(data: { id: string; checkout_id: string; status: string }) {
   try {
-    const { id: transaction_id, checkout_id, status } = data;
+    const { id: transaction_id, checkout_id } = data;
 
     // Update bill payment status to paid
     const { error } = await supabaseServer
@@ -58,7 +59,7 @@ async function handleTransactionCompleted(data: any) {
   }
 }
 
-async function handleTransactionFailed(data: any) {
+async function handleTransactionFailed(data: { checkout_id: string }) {
   try {
     const { checkout_id } = data;
 
@@ -83,7 +84,7 @@ async function handleTransactionFailed(data: any) {
   }
 }
 
-async function handleCheckoutCompleted(data: any) {
+async function handleCheckoutCompleted(data: { id: string }) {
   try {
     const { id: checkout_id } = data;
 

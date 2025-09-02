@@ -6,7 +6,7 @@ import { initializePaddle } from '@paddle/paddle-js';
 const PADDLE_ENVIRONMENT = process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || 'sandbox';
 const PADDLE_CLIENT_TOKEN = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN!;
 
-let paddle: any = null;
+let paddle: unknown = null;
 
 export const initPaddle = async () => {
   if (paddle) return paddle;

@@ -16,9 +16,10 @@ function initializePaddle() {
     });
     console.log('✅ Paddle SDK initialized successfully');
     return paddle;
-  } catch (error: any) {
-    console.error('💥 Paddle SDK initialization failed:', error);
-    throw error;
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    console.error('💥 Paddle SDK initialization failed:', errorMessage);
+    throw new Error(errorMessage);
   }
 }
 
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
     console.log('🔍 Starting Paddle checkout request');
     
     // Initialize Paddle (moved inside function for serverless compatibility)
-    const paddle = initializePaddle();
+    // const paddle = initializePaddle(); // Currently unused but kept for future use
 
     const body = await request.json();
     const { bill_id, customer_email, success_url, cancel_url } = body;
@@ -66,7 +67,7 @@ export async function POST(request: Request) {
 
     // Prepare checkout data for client-side Paddle integration
     const checkoutData = {
-      items: bill.bill_items.map((item: any) => {
+      items: bill.bill_items.map((item: { item_type: string; quantity: number }) => {
         const priceId = PRICE_IDS[item.item_type as keyof typeof PRICE_IDS];
         console.log(`🔍 Mapping item: ${item.item_type} -> ${priceId}`);
         return {
@@ -112,10 +113,11 @@ export async function POST(request: Request) {
       message: 'Checkout data prepared for client-side Paddle integration'
     });
 
-  } catch (error: any) {
-    console.error('Checkout creation error:', error);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    console.error('Checkout creation error:', errorMessage);
     return NextResponse.json(
-      { error: error.message },
+      { error: errorMessage },
       { status: 500 }
     );
   }

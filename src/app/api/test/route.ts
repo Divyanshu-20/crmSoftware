@@ -21,12 +21,13 @@ export async function GET() {
       environment_check: envStatus,
       node_version: process.version
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     console.error('💥 Test endpoint error:', error);
     return NextResponse.json(
       { 
         error: 'Test endpoint failed',
-        details: error.message 
+        details: errorMessage 
       },
       { status: 500 }
     );
